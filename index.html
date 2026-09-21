@@ -275,7 +275,10 @@
     border-radius:980px;
     white-space:nowrap;
     backdrop-filter:blur(6px);
+    text-decoration:none;
+    transition:background 0.15s ease;
   }
+  .source-badge:hover{background:#ffffff;}
   .rank-badge{
     display:inline-flex;align-items:center;justify-content:center;
     width:30px;height:30px;
@@ -835,7 +838,9 @@ function renderCards(){
     } else {
       badgeRow.appendChild(document.createElement('span'));
     }
-    const srcBadge = document.createElement('span'); srcBadge.className = 'source-badge'; srcBadge.textContent = item.source;
+    const srcBadge = document.createElement('a'); srcBadge.className = 'source-badge'; srcBadge.textContent = item.source + ' ↗';
+    srcBadge.href = item.url; srcBadge.target = '_blank'; srcBadge.rel = 'noopener noreferrer';
+    srcBadge.title = 'Bekijk de volledige advertentie op ' + item.source;
     badgeRow.appendChild(srcBadge);
     photoWrap.appendChild(badgeRow);
     card.appendChild(photoWrap);
