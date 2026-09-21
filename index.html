@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasteeltje 2027</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --bg-elevated:#ffffff;
+    --ink:#1d1d1f;
+    --ink-soft:#6e6e73;
+    --ink-faint:#a1a1a6;
+    --accent:#c1502e;
+    --accent-ink:#ffffff;
+    --good:#2a8a4a;
+    --good-bg:#e6f4ea;
+    --warn:#b26b00;
+    --warn-bg:#fdf1de;
+    --bad:#d33;
+    --bad-bg:#fdeaea;
+    --line:#e5e5ea;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 40px rgba(0,0,0,0.14);
+    --radius: 18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#000000;
+      --bg-elevated:#1c1c1e;
+      --ink:#f5f5f7;
+      --ink-soft:#a1a1a6;
+      --ink-faint:#6e6e73;
+      --accent:#e0794f;
+      --accent-ink:#1a0e08;
+      --good:#5fd888;
+      --good-bg:#132b1c;
+      --warn:#f0b84c;
+      --warn-bg:#332609;
+      --bad:#ff6961;
+      --bad-bg:#341012;
+      --line:#2c2c2e;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+      --shadow-lg: 0 16px 40px rgba(0,0,0,0.55);
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 60px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+  a{color:inherit;}
+
+  header{
+    text-align:center;
+    padding:52px 20px 28px;
+  }
+  header h1{
+    font-size:2.4rem;
+    font-weight:700;
+    margin:0 0 8px;
+    letter-spacing:-0.02em;
+  }
+  header p{
+    color:var(--ink-soft);
+    margin:0;
+    font-size:1.02rem;
+    font-weight:400;
+  }
+
+  h2.section-title{
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin:52px 0 4px;
+  }
+  .section-sub{color:var(--ink-soft);font-size:0.92rem;margin:0 0 20px;}
+
+  .banner{
+    background:var(--warn-bg);
+    color:var(--warn);
+    border-radius:14px;
+    padding:14px 18px;
+    font-size:0.86rem;
+    margin:20px 0;
+    line-height:1.5;
+  }
+  .banner code{background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:5px;}
+
+  .settings-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    align-items:center;
+    justify-content:center;
+    background:var(--bg-elevated);
+    border-radius:16px;
+    padding:14px 22px;
+    margin:20px 0;
+    box-shadow:var(--shadow-sm);
+    font-size:0.9rem;
+  }
+  .settings-bar label{color:var(--ink-soft);display:flex;align-items:center;gap:8px;}
+  .settings-bar input{
+    width:56px;
+    padding:5px 8px;
+    border:none;
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:0.95rem;
+    text-align:center;
+  }
+  .settings-bar .who{
+    color:var(--ink-soft);
+    display:flex;align-items:center;gap:6px;
+  }
+  .settings-bar .who button{
+    background:none;border:none;color:var(--accent);cursor:pointer;
+    font-family:inherit;font-size:0.85rem;padding:0;
+  }
+
+  .add-toggle{
+    display:block;
+    margin:0 auto 20px;
+    background:var(--accent);
+    color:var(--accent-ink);
+    border:none;
+    border-radius:980px;
+    padding:13px 26px;
+    font-size:0.98rem;
+    font-family:inherit;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform 0.15s ease, opacity 0.15s ease;
+  }
+  .add-toggle:hover{opacity:0.88;}
+  .add-toggle:active{transform:scale(0.97);}
+
+  form#addForm{
+    display:none;
+    background:var(--bg-elevated);
+    border-radius:var(--radius);
+    padding:24px;
+    margin-bottom:24px;
+    box-shadow:var(--shadow-md);
+  }
+  form#addForm.open{display:block;}
+  form#addForm h2{margin-top:0;font-size:1.15rem;font-weight:700;}
+  .grid2{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+  }
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:0.8rem;color:var(--ink-soft);}
+  .field .hint{font-size:0.72rem;color:var(--ink-faint);}
+  .field input,.field select{
+    padding:9px 11px;
+    border:none;
+    border-radius:10px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:0.95rem;
+  }
+  .field.wide{grid-column:1 / -1;}
+  .form-actions{
+    margin-top:18px;
+    display:flex;
+    gap:10px;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:var(--accent-ink);
+    border:none;
+    border-radius:980px;
+    padding:10px 22px;
+    font-family:inherit;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-secondary{
+    background:var(--bg);
+    color:var(--ink-soft);
+    border:none;
+    border-radius:980px;
+    padding:10px 22px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  .sort-bar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+    font-size:0.85rem;
+    align-items:center;
+    color:var(--ink-soft);
+  }
+  .sort-bar button{
+    background:var(--bg-elevated);
+    border:none;
+    border-radius:980px;
+    padding:7px 16px;
+    font-family:inherit;
+    font-size:0.85rem;
+    cursor:pointer;
+    color:var(--ink);
+    box-shadow:var(--shadow-sm);
+  }
+  .sort-bar button.active{
+    background:var(--ink);
+    color:var(--bg-elevated);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty-state .big{font-size:2.8rem;margin-bottom:10px;}
+
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
+  }
+  .card{
+    background:var(--bg-elevated);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+    display:flex;
+    flex-direction:column;
+    transition:box-shadow 0.2s ease;
+  }
+  .card:hover{box-shadow:var(--shadow-lg);}
+  .card-photo{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/10;
+    background:var(--line);
+    overflow:hidden;
+  }
+  .card-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .card-photo .no-photo{
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.6rem;
+    color:var(--ink-faint);
+  }
+  .photo-badge-row{
+    position:absolute;top:10px;left:10px;right:10px;
+    display:flex;justify-content:space-between;align-items:flex-start;
+  }
+  .source-badge{
+    display:inline-block;
+    font-size:0.68rem;
+    font-weight:600;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+    background:rgba(255,255,255,0.9);
+    color:#1d1d1f;
+    padding:5px 10px;
+    border-radius:980px;
+    white-space:nowrap;
+    backdrop-filter:blur(6px);
+  }
+  .rank-badge{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--accent-ink);
+    font-weight:700;
+    font-size:0.9rem;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25);
+  }
+
+  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;}
+  .card h3{
+    margin:0;
+    font-size:1.08rem;
+    font-weight:700;
+    line-height:1.3;
+  }
+  .card h3 a{color:var(--ink);text-decoration:none;}
+  .card h3 a:hover{color:var(--accent);}
+  .price-tag{
+    font-size:1.5rem;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .price-tag small{font-size:0.82rem;font-weight:400;color:var(--ink-soft);}
+  .score-line{font-size:0.85rem;color:var(--ink-soft);}
+
+  .vote-btn-row button{
+    width:100%;
+    padding:10px;
+    border-radius:12px;
+    border:none;
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .vote-btn-row button.not-voted{
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .vote-btn-row button.not-voted:hover{background:var(--line);}
+  .vote-btn-row button.voted{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .vote-btn-row button:disabled{opacity:0.5;cursor:not-allowed;}
+
+  details.more-info{margin-top:2px;}
+  details.more-info summary{
+    cursor:pointer;
+    font-size:0.85rem;
+    color:var(--accent);
+    font-weight:600;
+    padding:4px 0;
+    list-style:none;
+  }
+  details.more-info summary::-webkit-details-marker{display:none;}
+  .more-content{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-top:8px;
+    margin-top:6px;
+    border-top:1px solid var(--line);
+  }
+  .price-sub{font-size:0.82rem;color:var(--ink-soft);}
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 14px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .meta-row span{display:flex;align-items:center;gap:4px;}
+  .notes{font-size:0.85rem;color:var(--ink-soft);font-style:italic;}
+  .status-select{
+    align-self:flex-start;
+    font-size:0.78rem;
+    padding:5px 10px;
+    border-radius:980px;
+    border:none;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+  }
+  .card-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .icon-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--ink-soft);
+    font-size:0.85rem;
+    padding:4px;
+  }
+  .icon-btn:hover{color:var(--bad);}
+
+  /* Payment table */
+  .pay-summary{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    background:var(--bg-elevated);
+    border-radius:16px;
+    padding:16px 20px;
+    box-shadow:var(--shadow-sm);
+    margin-bottom:18px;
+  }
+  .pay-stat{flex:1;min-width:120px;}
+  .pay-stat .num{font-size:1.4rem;font-weight:700;color:var(--ink);}
+  .pay-stat .lbl{font-size:0.76rem;color:var(--ink-soft);}
+
+  .pay-table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--bg-elevated);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow-sm);
+  }
+  .pay-table th{
+    text-align:left;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    color:var(--ink-soft);
+    font-weight:600;
+    padding:10px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .pay-table td{
+    padding:9px 16px;
+    border-bottom:1px solid var(--line);
+    font-size:0.92rem;
+  }
+  .pay-table tr:last-child td{border-bottom:none;}
+  .pay-table tr.me td{background:var(--warn-bg);}
+  .pay-table tr.paid td{background:var(--good-bg);}
+  .pay-table tr.me.paid td{background:var(--good-bg);}
+  .pay-table .name-cell{font-weight:600;display:flex;align-items:center;gap:6px;}
+  .pay-table .me-tag{font-size:0.68rem;color:var(--accent);font-weight:700;}
+  .pay-table input[type="text"]{
+    border:none;background:transparent;font-family:inherit;font-size:0.92rem;font-weight:600;color:var(--ink);width:100%;padding:2px 0;
+  }
+  .pay-table input[type="number"]{
+    width:80px;
+    padding:5px 8px;
+    border:none;
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:0.85rem;
+  }
+  .pay-table input[type="checkbox"]{width:19px;height:19px;accent-color:var(--good);cursor:pointer;}
+  .pay-table .row-del{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:0.8rem;}
+  .pay-table .row-del:hover{color:var(--bad);}
+  .pay-empty{padding:30px 16px;text-align:center;color:var(--ink-soft);font-size:0.9rem;}
+
+  /* Name overlay */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .overlay-card{
+    background:var(--bg-elevated);
+    border-radius:24px;
+    padding:36px 32px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow:var(--shadow-lg);
+  }
+  .overlay-card .emoji{font-size:2.6rem;margin-bottom:6px;}
+  .overlay-card h2{margin:0 0 6px;font-size:1.4rem;font-weight:700;}
+  .overlay-card p{margin:0 0 20px;color:var(--ink-soft);font-size:0.92rem;line-height:1.45;}
+  .overlay-card input{
+    width:100%;
+    padding:13px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:1rem;
+    text-align:center;
+    margin-bottom:14px;
+  }
+  .overlay-card .btn-primary{width:100%;padding:13px;font-size:0.98rem;}
+  .overlay-card .skip{
+    display:block;margin-top:14px;background:none;border:none;
+    color:var(--ink-faint);font-family:inherit;font-size:0.82rem;cursor:pointer;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--ink-faint);
+    font-size:0.78rem;
+    margin:40px 0 10px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div id="nameOverlay"></div>
+
+<div class="wrap">
+  <header>
+    <h1>Kasteeltje 2027</h1>
+    <p>Laatste week augustus of eerste week september — 35 man, één huis</p>
+  </header>
+
+  <div id="firebaseBanner"></div>
+
+  <div class="settings-bar">
+    <label>Aantal personen <input type="number" id="groupSize" min="1" value="35"></label>
+    <label>Aantal nachten <input type="number" id="nightsSetting" min="1" value="7"></label>
+    <span class="who" id="whoAmI"></span>
+  </div>
+
+  <h2 class="section-title">De opties</h2>
+  <p class="section-sub">Stem op je favoriet — de eerste klik is je 1e keus, de volgende je 2e, enzovoort.</p>
+
+  <button class="add-toggle" id="addToggle">+ Optie toevoegen</button>
+
+  <form id="addForm">
+    <h2 id="formTitle">Nieuwe optie</h2>
+    <div class="grid2">
+      <div class="field wide">
+        <label>Link naar de accommodatie</label>
+        <input type="url" id="f_url" placeholder="https://www.belvilla.nl/..." required>
+      </div>
+      <div class="field wide">
+        <label>Naam</label>
+        <input type="text" id="f_name" placeholder="Kasteel de Zoete Waters" required>
+      </div>
+      <div class="field wide">
+        <label>Foto URL (optioneel)</label>
+        <input type="url" id="f_image" placeholder="https://...jpg">
+        <span class="hint">Rechtermuisknop op een foto op de site → "afbeeldingsadres kopiëren". Of stuur de link in de chat en die zoekt 'm voor je op.</span>
+      </div>
+      <div class="field">
+        <label>Bron</label>
+        <select id="f_source">
+          <option value="Belvilla">Belvilla</option>
+          <option value="Natuurhuisje">Natuurhuisje</option>
+          <option value="Ardennen Plezier">Ardennen Plezier</option>
+          <option value="Overig">Overig</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Max. aantal gasten</label>
+        <input type="number" id="f_capacity" min="1" placeholder="35">
+        <span class="hint">Staat op de site zelf, niet automatisch op te halen</span>
+      </div>
+      <div class="field">
+        <label>Prijs per nacht (€, hele huis)</label>
+        <input type="number" id="f_price" min="0" step="0.01" placeholder="850">
+      </div>
+      <div class="field">
+        <label>Borg (€, optioneel)</label>
+        <input type="number" id="f_deposit" min="0" step="0.01" placeholder="500">
+      </div>
+      <div class="field">
+        <label>Parkeren</label>
+        <select id="f_parking">
+          <option value="onbekend">Onbekend</option>
+          <option value="ja">Ja, voldoende</option>
+          <option value="beperkt">Beperkt</option>
+          <option value="nee">Nee</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Zwembad</label>
+        <select id="f_pool">
+          <option value="onbekend">Onbekend</option>
+          <option value="binnen">Binnen</option>
+          <option value="buiten">Buiten (verwarmd)</option>
+          <option value="buiten-onverwarmd">Buiten (onverwarmd)</option>
+          <option value="nee">Geen</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="f_status">
+          <option value="overwegen">Te overwegen</option>
+          <option value="interessant">Interessant!</option>
+          <option value="afgewezen">Afgewezen</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <label>Notities (optioneel)</label>
+        <input type="text" id="f_notes" placeholder="bv. eigen beschikbaarheid, sfeer, opmerkingen...">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Opslaan</button>
+      <button type="button" class="btn-secondary" id="cancelForm">Annuleren</button>
+    </div>
+  </form>
+
+  <div class="sort-bar">
+    Sorteer op:
+    <button data-sort="score" class="active">Score</button>
+    <button data-sort="pppn">€ p.p./nacht</button>
+    <button data-sort="price">Prijs/nacht</button>
+    <button data-sort="capacity">Capaciteit</button>
+    <button data-sort="name">Naam</button>
+  </div>
+
+  <div id="cards" class="cards"></div>
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="big">🏰</div>
+    <div>Nog geen opties toegevoegd. Klik hierboven op <strong>"+ Optie toevoegen"</strong> om te beginnen.</div>
+  </div>
+
+  <h2 class="section-title">Betaaloverzicht</h2>
+  <p class="section-sub">Vink af zodra iemand betaald heeft. Je eigen naam wordt gemarkeerd zodra je meedoet.</p>
+  <div class="banner">
+    Tikkie heeft geen publieke koppeling voor persoonlijk gebruik (alleen een zakelijke API via ABN AMRO), dus dit is geen automatische koppeling. Stuur je Tikkie-verzoeken zoals gewend en werk dit overzicht handmatig bij.
+  </div>
+  <div class="pay-summary">
+    <div class="pay-stat"><div class="num" id="filledCountNum">0 / 35</div><div class="lbl">meegedaan</div></div>
+    <div class="pay-stat"><div class="num" id="payCountNum">0 / 35</div><div class="lbl">betaald</div></div>
+    <div class="pay-stat"><div class="num" id="payTotalNum">€0</div><div class="lbl">binnengekomen</div></div>
+  </div>
+  <table class="pay-table">
+    <thead>
+      <tr><th>Naam</th><th>Betaald</th><th>Bedrag</th><th></th></tr>
+    </thead>
+    <tbody id="payTableBody"></tbody>
+  </table>
+  <div id="payEmpty" class="pay-empty" style="display:none;">Nog niemand heeft zich aangemeld. Zodra mensen hun naam invullen, verschijnen ze hier.</div>
+
+  <footer>
+    Live gedeeld via Firebase zodra dat gekoppeld is — anders blijft dit lokaal in jouw browser.<br>
+    Iedereen met de link kan meedoen; er zit geen echte login achter, dus behandel dit als een openbaar prikbord voor de groep.
+  </footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ---- Firebase config: replace these placeholder values with your own project's config ----
+const firebaseConfig = {
+  apiKey: "VUL-HIER-JE-FIREBASE-CONFIG-IN",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+const FIREBASE_READY = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "VUL-HIER-JE-FIREBASE-CONFIG-IN";
+
+let db = null;
+if (FIREBASE_READY) {
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} else {
+  document.getElementById('firebaseBanner').innerHTML =
+    '<div class="banner">⚙️ Firebase is nog niet gekoppeld — stemmen en het betaaloverzicht worden nu alleen lokaal in deze browser bewaard, niet gedeeld met anderen. Vul <code>firebaseConfig</code> bovenin de code in om dit voor iedereen live te maken.</div>';
+}
+
+function genId(){ return Date.now() + '-' + Math.random().toString(36).slice(2); }
+
+function firestoreStore(name){
+  return {
+    subscribe(fn){ return onSnapshot(collection(db, name), snap => fn(snap.docs.map(d => ({ id: d.id, ...d.data() })))); },
+    async put(id, item){ await setDoc(doc(db, name, id), item); },
+    async patch(id, partial){ await updateDoc(doc(db, name, id), partial); },
+    async remove(id){ await deleteDoc(doc(db, name, id)); }
+  };
+}
+function localStore(key, defaultVal){
+  let data = null;
+  try{ data = JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){}
+  if(data === null) data = defaultVal;
+  const listeners = new Set();
+  function persist(){ try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){} listeners.forEach(fn => fn(data)); }
+  return {
+    subscribe(fn){ listeners.add(fn); fn(data); return () => listeners.delete(fn); },
+    put(id, item){ const idx = data.findIndex(d => d.id === id); const full = { id, ...item }; if(idx > -1) data[idx] = full; else data = [...data, full]; persist(); },
+    patch(id, partial){ data = data.map(d => d.id === id ? { ...d, ...partial } : d); persist(); },
+    remove(id){ data = data.filter(d => d.id !== id); persist(); }
+  };
+}
+function firestoreDocStore(coll, id, defaultVal){
+  return {
+    subscribe(fn){ return onSnapshot(doc(db, coll, id), snap => fn(snap.exists() ? snap.data() : defaultVal)); },
+    async set(patch){ await setDoc(doc(db, coll, id), patch, { merge: true }); }
+  };
+}
+function localDocStore(key, defaultVal){
+  let data = null;
+  try{ data = JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){}
+  if(data === null) data = defaultVal;
+  const listeners = new Set();
+  return {
+    subscribe(fn){ listeners.add(fn); fn(data); return () => listeners.delete(fn); },
+    set(patch){ data = { ...data, ...patch }; try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){} listeners.forEach(fn => fn(data)); }
+  };
+}
+
+const DEFAULT_LISTINGS = [
+  {
+    id: 'seed-1',
+    url: 'https://www.belvilla.nl/be/100016944/?utm_source=webShare&utm_medium=dp',
+    name: 'Herenhuis met zwembad, Néblon',
+    image: 'https://images.oyoroomscdn.com/uploads/hotel_image/100016944/large/54530_lsr_2010033026426338510.jpg',
+    source: 'Belvilla',
+    capacity: 32,
+    price: 483,
+    deposit: null,
+    parking: 'onbekend',
+    pool: 'binnen',
+    status: 'overwegen',
+    notes: 'Ouffet (Durbuy). 12 slaapkamers, 9 badkamers. Vanaf-prijs op site: €483/nacht (bij 2 gasten gezocht) — check exacte prijs (en borg) voor jullie data, dat stond niet los op de site.'
+  },
+  {
+    id: 'seed-2',
+    url: 'https://www.belvilla.nl/be/100021591/?utm_source=webShare&utm_medium=dp',
+    name: 'Historische molen met sauna',
+    image: 'https://images.oyoroomscdn.com/uploads/hotel_image/100021591/11421_lsr_2017052947761160436.jpg',
+    source: 'Belvilla',
+    capacity: 30,
+    price: 820,
+    deposit: null,
+    parking: 'onbekend',
+    pool: 'binnen',
+    status: 'overwegen',
+    notes: 'Vresse-sur-Semois. 15 slaapkamers, 16 badkamers, sauna. Vanaf-prijs op site: €820/nacht (bij 2 gasten gezocht) — check exacte prijs (en borg) voor jullie data. Iets krapper dan 35p.'
+  }
+];
+
+const listingsStore = FIREBASE_READY ? firestoreStore('listings') : localStore('kasteeltje-listings-v4', DEFAULT_LISTINGS.slice());
+const participantsStore = FIREBASE_READY ? firestoreStore('participants') : localStore('kasteeltje-participants-v3', []);
+const votesStore = FIREBASE_READY ? firestoreStore('votes') : localStore('kasteeltje-votes-v1', []);
+const settingsStore = FIREBASE_READY ? firestoreDocStore('meta', 'settings', { groupSize: 35, nights: 7 }) : localDocStore('kasteeltje-settings-v2', { groupSize: 35, nights: 7 });
+
+let listings = [];
+let participants = [];
+let votes = [];
+let settings = { groupSize: 35, nights: 7 };
+let editingId = null;
+let currentSort = 'score';
+let seededListings = false;
+
+let myId = null;
+let myName = null;
+try{ myId = localStorage.getItem('kasteeltje-my-id'); myName = localStorage.getItem('kasteeltje-my-name'); }catch(e){}
+
+listingsStore.subscribe(data => {
+  listings = data;
+  if(FIREBASE_READY && !seededListings && listings.length === 0){
+    seededListings = true;
+    DEFAULT_LISTINGS.forEach(l => listingsStore.put(l.id, l));
+  }
+  renderCards();
+});
+participantsStore.subscribe(data => { participants = data; renderPayTable(); });
+votesStore.subscribe(data => { votes = data; renderCards(); });
+settingsStore.subscribe(data => {
+  settings = data || { groupSize: 35, nights: 7 };
+  document.getElementById('groupSize').value = settings.groupSize || 35;
+  document.getElementById('nightsSetting').value = settings.nights || 7;
+  renderCards(); renderPayTable();
+});
+
+function fmtEuro(n){ return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n); }
+function parkingLabel(v){ return {onbekend:'Parkeren onbekend', ja:'✅ Parkeren voldoende', beperkt:'⚠️ Parkeren beperkt', nee:'❌ Geen parkeren'}[v] || v; }
+function poolLabel(v){ return {onbekend:'Zwembad onbekend', binnen:'🏊 Binnenzwembad', buiten:'🏊 Buitenzwembad (verwarmd)', 'buiten-onverwarmd':'🏊 Buitenzwembad (onverwarmd)', nee:'Geen zwembad'}[v] || v; }
+function statusLabel(v){ return {overwegen:'Te overwegen', interessant:'Interessant!', afgewezen:'Afgewezen'}[v] || v; }
+
+function scoreFor(listingId){
+  let score = 0, voters = 0;
+  for(const v of votes){
+    const ranked = v.rankedListingIds || [];
+    const idx = ranked.indexOf(listingId);
+    if(idx > -1){ score += (ranked.length - idx); voters++; }
+  }
+  return { score, voters };
+}
+function myRankFor(listingId){
+  const mine = votes.find(v => v.id === myId);
+  if(!mine) return null;
+  const idx = (mine.rankedListingIds || []).indexOf(listingId);
+  return idx > -1 ? idx + 1 : null;
+}
+function toggleVote(listingId){
+  if(!myId){ showNameOverlay(); return; }
+  const mine = votes.find(v => v.id === myId);
+  let ranked = mine ? [...(mine.rankedListingIds || [])] : [];
+  const idx = ranked.indexOf(listingId);
+  if(idx > -1) ranked.splice(idx, 1); else ranked.push(listingId);
+  votesStore.put(myId, { participantName: myName, rankedListingIds: ranked });
+}
+
+function renderCards(){
+  const groupSize = settings.groupSize || 35;
+  document.getElementById('emptyState').style.display = listings.length ? 'none' : 'block';
+
+  const sorted = [...listings].sort((a,b) => {
+    const pppnA = a.price / groupSize, pppnB = b.price / groupSize;
+    switch(currentSort){
+      case 'price': return a.price - b.price;
+      case 'pppn': return pppnA - pppnB;
+      case 'capacity': return (b.capacity||0) - (a.capacity||0);
+      case 'name': return a.name.localeCompare(b.name);
+      default: return scoreFor(b.id).score - scoreFor(a.id).score;
+    }
+  });
+
+  const container = document.getElementById('cards');
+  container.innerHTML = '';
+
+  for(const item of sorted){
+    const pppn = item.price ? item.price / groupSize : null;
+    const totalPerPerson = pppn !== null && settings.nights ? pppn * settings.nights : null;
+    const totalGroup = item.price && settings.nights ? item.price * settings.nights : null;
+    const fitsGroup = item.capacity ? item.capacity >= groupSize : null;
+    const { score, voters } = scoreFor(item.id);
+    const myRank = myRankFor(item.id);
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const photoWrap = document.createElement('div');
+    photoWrap.className = 'card-photo';
+    if(item.image){
+      const img = document.createElement('img');
+      img.src = item.image; img.alt = item.name; img.loading = 'lazy';
+      img.onerror = () => { photoWrap.querySelector('img')?.remove(); const ph = document.createElement('div'); ph.className='no-photo'; ph.textContent='🏰'; photoWrap.prepend(ph); };
+      photoWrap.appendChild(img);
+    } else {
+      const ph = document.createElement('div'); ph.className = 'no-photo'; ph.textContent = '🏰';
+      photoWrap.appendChild(ph);
+    }
+    const badgeRow = document.createElement('div');
+    badgeRow.className = 'photo-badge-row';
+    if(myRank){
+      const rb = document.createElement('span'); rb.className = 'rank-badge'; rb.textContent = myRank;
+      badgeRow.appendChild(rb);
+    } else {
+      badgeRow.appendChild(document.createElement('span'));
+    }
+    const srcBadge = document.createElement('span'); srcBadge.className = 'source-badge'; srcBadge.textContent = item.source;
+    badgeRow.appendChild(srcBadge);
+    photoWrap.appendChild(badgeRow);
+    card.appendChild(photoWrap);
+
+    const body = document.createElement('div');
+    body.className = 'card-body';
+
+    const h3 = document.createElement('h3');
+    h3.innerHTML = `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.name}</a>`;
+    body.appendChild(h3);
+
+    if(pppn !== null){
+      const priceTag = document.createElement('div');
+      priceTag.className = 'price-tag';
+      priceTag.innerHTML = `${fmtEuro(pppn)} <small>p.p. / nacht</small>`;
+      body.appendChild(priceTag);
+    }
+
+    const scoreLine = document.createElement('div');
+    scoreLine.className = 'score-line';
+    scoreLine.textContent = voters ? `🏆 ${score} punten · ${voters} stem${voters===1?'':'men'}` : 'Nog geen stemmen';
+    body.appendChild(scoreLine);
+
+    const voteRow = document.createElement('div');
+    voteRow.className = 'vote-btn-row';
+    const voteBtn = document.createElement('button');
+    voteBtn.className = myRank ? 'voted' : 'not-voted';
+    voteBtn.textContent = myRank ? `✓ Jouw ${myRank}e keus` : 'Stem op deze optie';
+    voteBtn.addEventListener('click', () => toggleVote(item.id));
+    voteRow.appendChild(voteBtn);
+    body.appendChild(voteRow);
+
+    const details = document.createElement('details');
+    details.className = 'more-info';
+    const summary = document.createElement('summary'); summary.textContent = 'Meer info & bewerken';
+    details.appendChild(summary);
+
+    const moreContent = document.createElement('div');
+    moreContent.className = 'more-content';
+
+    if(totalPerPerson !== null){
+      const sub = document.createElement('div'); sub.className = 'price-sub';
+      sub.textContent = `≈ ${fmtEuro(totalPerPerson)} p.p. voor ${settings.nights} nachten · ${fmtEuro(totalGroup)} totaal voor de groep`;
+      moreContent.appendChild(sub);
+    }
+
+    const metaRow = document.createElement('div');
+    metaRow.className = 'meta-row';
+    let metaHtml = '';
+    if(item.price) metaHtml += `<span>💶 ${fmtEuro(item.price)} / nacht</span>`;
+    if(item.capacity) metaHtml += `<span>👥 Max ${item.capacity} gasten${fitsGroup === false ? ' ⚠️' : ''}</span>`;
+    if(item.deposit) metaHtml += `<span>🔒 Borg: ${fmtEuro(item.deposit)}</span>`;
+    metaRow.innerHTML = metaHtml;
+    moreContent.appendChild(metaRow);
+
+    const metaRow2 = document.createElement('div');
+    metaRow2.className = 'meta-row';
+    metaRow2.innerHTML = `<span>🚗 ${parkingLabel(item.parking)}</span><span>${poolLabel(item.pool)}</span>`;
+    moreContent.appendChild(metaRow2);
+
+    if(item.notes){
+      const notes = document.createElement('div'); notes.className = 'notes'; notes.textContent = item.notes;
+      moreContent.appendChild(notes);
+    }
+
+    const statusSelect = document.createElement('select');
+    statusSelect.className = 'status-select';
+    for(const s of ['overwegen','interessant','afgewezen']){
+      const opt = document.createElement('option'); opt.value = s; opt.textContent = statusLabel(s);
+      if(s === item.status) opt.selected = true;
+      statusSelect.appendChild(opt);
+    }
+    statusSelect.addEventListener('change', () => listingsStore.patch(item.id, { status: statusSelect.value }));
+    moreContent.appendChild(statusSelect);
+
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    const editBtn = document.createElement('button'); editBtn.className = 'icon-btn'; editBtn.textContent = '✏️ Bewerken';
+    editBtn.addEventListener('click', () => openEdit(item.id));
+    const delBtn = document.createElement('button'); delBtn.className = 'icon-btn'; delBtn.textContent = '🗑️ Verwijderen';
+    delBtn.addEventListener('click', () => { if(confirm(`"${item.name}" verwijderen?`)) listingsStore.remove(item.id); });
+    actions.appendChild(editBtn); actions.appendChild(delBtn);
+    moreContent.appendChild(actions);
+
+    details.appendChild(moreContent);
+    body.appendChild(details);
+    card.appendChild(body);
+    container.appendChild(card);
+  }
+}
+
+function renderPayTable(){
+  const groupSize = settings.groupSize || 35;
+  const tbody = document.getElementById('payTableBody');
+  tbody.innerHTML = '';
+  const sorted = [...participants].sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  document.getElementById('payEmpty').style.display = sorted.length ? 'none' : 'block';
+
+  let paidCount = 0, paidTotal = 0;
+  for(const p of sorted){
+    if(p.paid){ paidCount++; paidTotal += (p.amount || 0); }
+    const isMe = p.id === myId;
+    const tr = document.createElement('tr');
+    tr.className = (isMe ? 'me ' : '') + (p.paid ? 'paid' : '');
+
+    const nameTd = document.createElement('td');
+    const nameCell = document.createElement('div');
+    nameCell.className = 'name-cell';
+    if(isMe){
+      const input = document.createElement('input');
+      input.type = 'text'; input.value = p.name;
+      input.addEventListener('change', () => {
+        const val = input.value.trim();
+        if(val){ participantsStore.patch(p.id, { name: val }); myName = val; try{ localStorage.setItem('kasteeltje-my-name', val); }catch(e){} }
+      });
+      nameCell.appendChild(input);
+      const tag = document.createElement('span'); tag.className = 'me-tag'; tag.textContent = 'JIJ';
+      nameCell.appendChild(tag);
+    } else {
+      nameCell.textContent = p.name;
+    }
+    nameTd.appendChild(nameCell);
+    tr.appendChild(nameTd);
+
+    const paidTd = document.createElement('td');
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!p.paid;
+    cb.addEventListener('change', () => participantsStore.patch(p.id, { paid: cb.checked }));
+    paidTd.appendChild(cb);
+    tr.appendChild(paidTd);
+
+    const amountTd = document.createElement('td');
+    const amt = document.createElement('input'); amt.type = 'number'; amt.min = '0'; amt.step = '0.01';
+    amt.placeholder = '€'; amt.value = p.amount || '';
+    amt.addEventListener('change', () => participantsStore.patch(p.id, { amount: parseFloat(amt.value) || 0 }));
+    amountTd.appendChild(amt);
+    tr.appendChild(amountTd);
+
+    const delTd = document.createElement('td');
+    if(isMe){
+      const del = document.createElement('button'); del.className = 'row-del'; del.textContent = '✕';
+      del.title = 'Mezelf verwijderen';
+      del.addEventListener('click', () => {
+        if(confirm('Jezelf van de lijst verwijderen?')){
+          participantsStore.remove(p.id);
+          try{ localStorage.removeItem('kasteeltje-my-id'); localStorage.removeItem('kasteeltje-my-name'); }catch(e){}
+          myId = null; myName = null;
+          renderPayTable(); renderCards(); updateWhoAmI();
+        }
+      });
+      delTd.appendChild(del);
+    }
+    tr.appendChild(delTd);
+
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById('filledCountNum').textContent = `${sorted.length} / ${groupSize}`;
+  document.getElementById('payCountNum').textContent = `${paidCount} / ${groupSize}`;
+  document.getElementById('payTotalNum').textContent = fmtEuro(paidTotal);
+}
+
+function updateWhoAmI(){
+  const el = document.getElementById('whoAmI');
+  if(myId && myName){
+    el.innerHTML = `Ingelogd als <strong>${myName}</strong> · <button id="changeNameBtn">wijzig</button>`;
+    document.getElementById('changeNameBtn').addEventListener('click', showNameOverlay);
+  } else {
+    el.innerHTML = `<button id="joinBtn">Doe mee →</button>`;
+    document.getElementById('joinBtn').addEventListener('click', showNameOverlay);
+  }
+}
+
+function showNameOverlay(){
+  const overlay = document.getElementById('nameOverlay');
+  overlay.innerHTML = `
+    <div class="overlay">
+      <div class="overlay-card">
+        <div class="emoji">🏰</div>
+        <h2>Wie ben jij?</h2>
+        <p>Vul je naam in om te stemmen en op de lijst te komen voor het betaaloverzicht.</p>
+        <input type="text" id="nameInput" placeholder="Voor- en achternaam" autofocus>
+        <button class="btn-primary" id="nameSubmit">Doe mee</button>
+        <button class="skip" id="nameSkip">Eerst even rondkijken</button>
+      </div>
+    </div>
+  `;
+  const input = document.getElementById('nameInput');
+  input.value = myName || '';
+  setTimeout(() => input.focus(), 0);
+  function submit(){
+    const val = input.value.trim();
+    if(!val) return;
+    if(myId){
+      participantsStore.patch(myId, { name: val });
+    } else {
+      myId = genId();
+      participantsStore.put(myId, { name: val, paid: false, amount: 0, joinedAt: Date.now() });
+      try{ localStorage.setItem('kasteeltje-my-id', myId); }catch(e){}
+    }
+    myName = val;
+    try{ localStorage.setItem('kasteeltje-my-name', val); }catch(e){}
+    overlay.innerHTML = '';
+    updateWhoAmI(); renderCards(); renderPayTable();
+  }
+  document.getElementById('nameSubmit').addEventListener('click', submit);
+  input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submit(); } });
+  document.getElementById('nameSkip').addEventListener('click', () => { overlay.innerHTML = ''; });
+}
+
+function detectSource(url){
+  const u = url.toLowerCase();
+  if(u.includes('belvilla')) return 'Belvilla';
+  if(u.includes('natuurhuisje')) return 'Natuurhuisje';
+  if(u.includes('ardenneplezier') || u.includes('ardennenplezier') || u.includes('ardenne-plezier')) return 'Ardennen Plezier';
+  return 'Overig';
+}
+
+const form = document.getElementById('addForm');
+document.getElementById('addToggle').addEventListener('click', () => {
+  editingId = null;
+  document.getElementById('formTitle').textContent = 'Nieuwe optie';
+  form.reset();
+  form.classList.add('open');
+  document.getElementById('f_url').focus();
+});
+document.getElementById('cancelForm').addEventListener('click', () => form.classList.remove('open'));
+document.getElementById('f_url').addEventListener('blur', e => {
+  if(e.target.value && !document.getElementById('f_source').dataset.touched){
+    document.getElementById('f_source').value = detectSource(e.target.value);
+  }
+});
+document.getElementById('f_source').addEventListener('change', e => { e.target.dataset.touched = '1'; });
+
+function openEdit(id){
+  const item = listings.find(l => l.id === id);
+  if(!item) return;
+  editingId = id;
+  document.getElementById('formTitle').textContent = 'Optie bewerken';
+  document.getElementById('f_url').value = item.url;
+  document.getElementById('f_name').value = item.name;
+  document.getElementById('f_image').value = item.image || '';
+  document.getElementById('f_source').value = item.source;
+  document.getElementById('f_capacity').value = item.capacity || '';
+  document.getElementById('f_price').value = item.price || '';
+  document.getElementById('f_deposit').value = item.deposit || '';
+  document.getElementById('f_parking').value = item.parking || 'onbekend';
+  document.getElementById('f_pool').value = item.pool || 'onbekend';
+  document.getElementById('f_status').value = item.status || 'overwegen';
+  document.getElementById('f_notes').value = item.notes || '';
+  form.classList.add('open');
+  window.scrollTo({ top: form.offsetTop - 20, behavior: 'smooth' });
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const id = editingId || genId();
+  const data = {
+    url: document.getElementById('f_url').value.trim(),
+    name: document.getElementById('f_name').value.trim(),
+    image: document.getElementById('f_image').value.trim(),
+    source: document.getElementById('f_source').value,
+    capacity: parseInt(document.getElementById('f_capacity').value) || null,
+    price: parseFloat(document.getElementById('f_price').value) || 0,
+    deposit: parseFloat(document.getElementById('f_deposit').value) || null,
+    parking: document.getElementById('f_parking').value,
+    pool: document.getElementById('f_pool').value,
+    status: document.getElementById('f_status').value,
+    notes: document.getElementById('f_notes').value.trim()
+  };
+  listingsStore.put(id, data);
+  form.classList.remove('open');
+  form.reset();
+  editingId = null;
+});
+
+document.getElementById('groupSize').addEventListener('change', e => settingsStore.set({ groupSize: parseInt(e.target.value) || 35 }));
+document.getElementById('nightsSetting').addEventListener('change', e => settingsStore.set({ nights: parseInt(e.target.value) || 7 }));
+
+document.querySelectorAll('.sort-bar button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sort-bar button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSort = btn.dataset.sort;
+    renderCards();
+  });
+});
+
+updateWhoAmI();
+if(!myId){ showNameOverlay(); }
+</script>
+</body>
+</html>
