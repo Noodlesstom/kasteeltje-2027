@@ -128,6 +128,43 @@
     font-family:inherit;font-size:0.85rem;padding:0;
   }
 
+  .week-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:8px;
+  }
+  .week-card{
+    background:var(--bg-elevated);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    box-shadow:var(--shadow-md);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .week-card.leading{box-shadow:0 0 0 2px var(--accent), var(--shadow-md);}
+  .week-card h3{margin:0;font-size:1.05rem;font-weight:700;}
+  .week-card .week-count{font-size:0.88rem;color:var(--ink-soft);}
+  .week-card .week-count.leading{color:var(--accent);font-weight:700;}
+  .week-card .week-bar{
+    height:6px;border-radius:4px;background:var(--line);overflow:hidden;
+  }
+  .week-card .week-bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width 0.2s ease;}
+  .week-card button{
+    padding:10px;
+    border-radius:12px;
+    border:none;
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .week-card button.not-in{background:var(--bg);color:var(--ink);}
+  .week-card button.not-in:hover{background:var(--line);}
+  .week-card button.in{background:var(--accent);color:var(--accent-ink);}
+
   .add-toggle{
     display:block;
     margin:0 auto 20px;
@@ -511,6 +548,10 @@
     <span class="who" id="whoAmI"></span>
   </div>
 
+  <h2 class="section-title">Welke week?</h2>
+  <p class="section-sub">Geef aan welke week(en) voor jou kunnen — meerdere mag.</p>
+  <div id="weekGrid" class="week-grid"></div>
+
   <h2 class="section-title">De opties</h2>
   <p class="section-sub">Stem op je favoriet — de eerste klik is je 1e keus, de volgende je 2e, enzovoort.</p>
 
@@ -738,11 +779,18 @@ const DEFAULT_LISTINGS = [
 const listingsStore = FIREBASE_READY ? firestoreStore('listings') : localStore('kasteeltje-listings-v4', DEFAULT_LISTINGS.slice());
 const participantsStore = FIREBASE_READY ? firestoreStore('participants') : localStore('kasteeltje-participants-v3', []);
 const votesStore = FIREBASE_READY ? firestoreStore('votes') : localStore('kasteeltje-votes-v1', []);
+const weekVotesStore = FIREBASE_READY ? firestoreStore('weekVotes') : localStore('kasteeltje-weekvotes-v1', []);
 const settingsStore = FIREBASE_READY ? firestoreDocStore('meta', 'settings', { groupSize: 35, nights: 7 }) : localDocStore('kasteeltje-settings-v2', { groupSize: 35, nights: 7 });
+
+const WEEK_OPTIONS = [
+  { id: 'week1', label: '23 – 27 augustus' },
+  { id: 'week2', label: '30 augustus – 3 september' }
+];
 
 let listings = [];
 let participants = [];
 let votes = [];
+let weekVotes = [];
 let settings = { groupSize: 35, nights: 7 };
 let editingId = null;
 let currentSort = 'score';
@@ -762,11 +810,12 @@ listingsStore.subscribe(data => {
 });
 participantsStore.subscribe(data => { participants = data; renderPayTable(); });
 votesStore.subscribe(data => { votes = data; renderCards(); });
+weekVotesStore.subscribe(data => { weekVotes = data; renderWeekPoll(); });
 settingsStore.subscribe(data => {
   settings = data || { groupSize: 35, nights: 7 };
   document.getElementById('groupSize').value = settings.groupSize || 35;
   document.getElementById('nightsSetting').value = settings.nights || 7;
-  renderCards(); renderPayTable();
+  renderCards(); renderPayTable(); renderWeekPoll();
 });
 
 function fmtEuro(n){ return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n); }
@@ -796,6 +845,55 @@ function toggleVote(listingId){
   const idx = ranked.indexOf(listingId);
   if(idx > -1) ranked.splice(idx, 1); else ranked.push(listingId);
   votesStore.put(myId, { participantName: myName, rankedListingIds: ranked });
+}
+
+function toggleWeek(weekId){
+  if(!myId){ showNameOverlay(); return; }
+  const mine = weekVotes.find(v => v.id === myId);
+  let weeks = mine ? [...(mine.weeks || [])] : [];
+  const idx = weeks.indexOf(weekId);
+  if(idx > -1) weeks.splice(idx, 1); else weeks.push(weekId);
+  weekVotesStore.put(myId, { participantName: myName, weeks });
+}
+
+function renderWeekPoll(){
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  const counts = WEEK_OPTIONS.map(opt => weekVotes.filter(v => (v.weeks || []).includes(opt.id)).length);
+  const maxCount = Math.max(...counts, 0);
+
+  WEEK_OPTIONS.forEach((opt, i) => {
+    const count = counts[i];
+    const isLeading = count > 0 && count === maxCount;
+    const mine = weekVotes.find(v => v.id === myId);
+    const imIn = !!(mine && (mine.weeks || []).includes(opt.id));
+
+    const card = document.createElement('div');
+    card.className = 'week-card' + (isLeading ? ' leading' : '');
+
+    const h3 = document.createElement('h3'); h3.textContent = opt.label;
+    card.appendChild(h3);
+
+    const countLine = document.createElement('div');
+    countLine.className = 'week-count' + (isLeading ? ' leading' : '');
+    countLine.textContent = count ? `${count} kunnen deze week` : 'Nog niemand';
+    card.appendChild(countLine);
+
+    const bar = document.createElement('div'); bar.className = 'week-bar';
+    const fill = document.createElement('div'); fill.className = 'week-bar-fill';
+    const groupSize = settings.groupSize || 35;
+    fill.style.width = Math.min(100, (count / groupSize) * 100) + '%';
+    bar.appendChild(fill);
+    card.appendChild(bar);
+
+    const btn = document.createElement('button');
+    btn.className = imIn ? 'in' : 'not-in';
+    btn.textContent = imIn ? '✓ Ik kan deze week' : 'Ik kan deze week';
+    btn.addEventListener('click', () => toggleWeek(opt.id));
+    card.appendChild(btn);
+
+    grid.appendChild(card);
+  });
 }
 
 function renderCards(){
@@ -1012,7 +1110,7 @@ function renderPayTable(){
           participantsStore.remove(p.id);
           try{ localStorage.removeItem('kasteeltje-my-id'); localStorage.removeItem('kasteeltje-my-name'); }catch(e){}
           myId = null; myName = null;
-          renderPayTable(); renderCards(); updateWhoAmI();
+          renderPayTable(); renderCards(); renderWeekPoll(); updateWhoAmI();
         }
       });
       delTd.appendChild(del);
@@ -1068,7 +1166,7 @@ function showNameOverlay(){
     myName = val;
     try{ localStorage.setItem('kasteeltje-my-name', val); }catch(e){}
     overlay.innerHTML = '';
-    updateWhoAmI(); renderCards(); renderPayTable();
+    updateWhoAmI(); renderCards(); renderPayTable(); renderWeekPoll();
   }
   document.getElementById('nameSubmit').addEventListener('click', submit);
   input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submit(); } });
