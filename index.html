@@ -630,7 +630,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, getDoc
+  getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---- Firebase config: replace these placeholder values with your own project's config ----
@@ -659,7 +659,7 @@ function firestoreStore(name){
   return {
     subscribe(fn){ return onSnapshot(collection(db, name), snap => fn(snap.docs.map(d => ({ id: d.id, ...d.data() })))); },
     async put(id, item){ await setDoc(doc(db, name, id), item); },
-    async patch(id, partial){ await updateDoc(doc(db, name, id), partial); },
+    async patch(id, partial){ await setDoc(doc(db, name, id), partial, { merge: true }); },
     async remove(id){ await deleteDoc(doc(db, name, id)); }
   };
 }
