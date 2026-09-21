@@ -307,6 +307,7 @@
   }
   .price-tag small{font-size:0.82rem;font-weight:400;color:var(--ink-soft);}
   .score-line{font-size:0.85rem;color:var(--ink-soft);}
+  .score-line.leading{color:var(--accent);font-weight:700;}
 
   .vote-btn-row button{
     width:100%;
@@ -801,6 +802,14 @@ function renderCards(){
   const groupSize = settings.groupSize || 35;
   document.getElementById('emptyState').style.display = listings.length ? 'none' : 'block';
 
+  const groupRank = new Map();
+  [...listings]
+    .map(l => ({ id: l.id, ...scoreFor(l.id) }))
+    .filter(l => l.voters > 0)
+    .sort((a,b) => b.score - a.score)
+    .forEach((l, i) => groupRank.set(l.id, i + 1));
+  const medalFor = rank => ({1:'🥇',2:'🥈',3:'🥉'}[rank] || `#${rank}`);
+
   const sorted = [...listings].sort((a,b) => {
     const pppnA = a.price / groupSize, pppnB = b.price / groupSize;
     switch(currentSort){
@@ -875,7 +884,9 @@ function renderCards(){
 
     const scoreLine = document.createElement('div');
     scoreLine.className = 'score-line';
-    scoreLine.textContent = voters ? `🏆 ${score} punten · ${voters} stem${voters===1?'':'men'}` : 'Nog geen stemmen';
+    const rank = groupRank.get(item.id);
+    scoreLine.textContent = voters ? `${medalFor(rank)} ${score} punten · ${voters} stem${voters===1?'':'men'}` : 'Nog geen stemmen';
+    if(rank === 1) scoreLine.classList.add('leading');
     body.appendChild(scoreLine);
 
     const voteRow = document.createElement('div');
