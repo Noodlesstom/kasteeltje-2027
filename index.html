@@ -554,6 +554,11 @@
         <input type="number" id="f_deposit" min="0" step="0.01" placeholder="500">
       </div>
       <div class="field">
+        <label>Reistijd vanaf Eindhoven (optioneel)</label>
+        <input type="text" id="f_travel" placeholder="bv. 2u10 (149 km)">
+        <span class="hint">Stuur de link in de chat en die rekent 'm voor je uit</span>
+      </div>
+      <div class="field">
         <label>Parkeren</label>
         <select id="f_parking">
           <option value="onbekend">Onbekend</option>
@@ -706,6 +711,7 @@ const DEFAULT_LISTINGS = [
     capacity: 32,
     price: 483,
     deposit: null,
+    travelInfo: '≈2u10 (149 km)',
     parking: 'onbekend',
     pool: 'binnen',
     status: 'overwegen',
@@ -720,6 +726,7 @@ const DEFAULT_LISTINGS = [
     capacity: 30,
     price: 820,
     deposit: null,
+    travelInfo: '≈3u20 (271 km)',
     parking: 'onbekend',
     pool: 'binnen',
     status: 'overwegen',
@@ -857,6 +864,13 @@ function renderCards(){
       priceTag.className = 'price-tag';
       priceTag.innerHTML = `${fmtEuro(pppn)} <small>p.p. / nacht</small>`;
       body.appendChild(priceTag);
+    }
+
+    if(item.travelInfo){
+      const travelLine = document.createElement('div');
+      travelLine.className = 'score-line';
+      travelLine.textContent = `🚗 ${item.travelInfo} vanaf Eindhoven`;
+      body.appendChild(travelLine);
     }
 
     const scoreLine = document.createElement('div');
@@ -1086,6 +1100,7 @@ function openEdit(id){
   document.getElementById('f_capacity').value = item.capacity || '';
   document.getElementById('f_price').value = item.price || '';
   document.getElementById('f_deposit').value = item.deposit || '';
+  document.getElementById('f_travel').value = item.travelInfo || '';
   document.getElementById('f_parking').value = item.parking || 'onbekend';
   document.getElementById('f_pool').value = item.pool || 'onbekend';
   document.getElementById('f_status').value = item.status || 'overwegen';
@@ -1105,6 +1120,7 @@ form.addEventListener('submit', e => {
     capacity: parseInt(document.getElementById('f_capacity').value) || null,
     price: parseFloat(document.getElementById('f_price').value) || 0,
     deposit: parseFloat(document.getElementById('f_deposit').value) || null,
+    travelInfo: document.getElementById('f_travel').value.trim(),
     parking: document.getElementById('f_parking').value,
     pool: document.getElementById('f_pool').value,
     status: document.getElementById('f_status').value,
